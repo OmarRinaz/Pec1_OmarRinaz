@@ -9,8 +9,8 @@ public class GameplayManager : MonoBehaviour {
 		public string[] questions;																				//Posibles preguntas
 		public string awnsers;																					//Respuestas posibles
 	}
-	public Text currentQuestion;
-
+	;
+	public string[] awnserParse;
 	#endregion
 
 	#region private vars
@@ -21,6 +21,7 @@ public class GameplayManager : MonoBehaviour {
 	private int totalRounds=0;
 	private int wins=0;
 	private int losses=0;
+	private UiManager uiManager;
 	private GameObject winPanel;
 	private GameObject winFighterPanel;
 	private GameObject losePanel;
@@ -30,17 +31,16 @@ public class GameplayManager : MonoBehaviour {
 	#region Unity Methods
 	// Use this for initialization
 	void Start () {
-		qaListFull = StoryFiller.FillList ();
+		//qaListFull = StoryFiller.FillList ();
+		qaListFull = StoryFiller.FillListFromXml();
 		qaList.AddRange (qaListFull);
+		awnserParse = new string[qaListFull.Count + 1];
+		uiManager = UiManager.Instance;
+		for (int i = 0; i < qaListFull.Count; i++) {
+			awnserParse[i] = qaListFull[i].awnsers;
+		}
+		uiManager.Init (awnserParse);
 		FillCurrent ();
-		FillUI ();
-		winPanel = GameObject.Find ("Canvas/WinPanel");
-		winFighterPanel = GameObject.Find ("Canvas/WinFighterPanel");
-		losePanel= GameObject.Find ("Canvas/LosePanel");
-		gameplayPanel = GameObject.Find ("Canvas/GameplayPanel");
-		winPanel.SetActive (false);
-		losePanel.SetActive (false);
-		winFighterPanel.SetActive (false);
 	}
 	#endregion
 	#region Private Methods
@@ -51,14 +51,16 @@ public class GameplayManager : MonoBehaviour {
 			current = qaList[position];
 			qaList.RemoveAt (position);
 			currentCorrectAwnser = current.awnsers;
+			uiManager.currentQuestion.text = current.questions [Random.Range (0, 1)]; //send current question to renew question ui
 			FillUI ();
 		}
 		catch(System.Exception e){
-			Debug.LogError (e.Message); // what to do if try dosenot work
+			Debug.LogError (e.Message); //what to do if try dosenot work
 		}
 	}
 	private void FillUI(){
-		currentQuestion.text = current.questions [Random.Range (0, 1)];
+		//send current question to renew question ui
+		uiManager.RenewUi(awnserParse, currentCorrectAwnser);
 	}
 	private void CheckRound(bool correct){
 		if (correct) {
@@ -72,11 +74,11 @@ public class GameplayManager : MonoBehaviour {
 				FillCurrent();
 				//show the fighter win screen
 				wins=0;
-				ShowScreen(3);
+				uiManager.ShowScreenSM(3);
 			} else {
 				//show the win round screen.
 				FillCurrent();
-				ShowScreen(1);
+				uiManager.ShowScreenSM(1);
 			}
 		}else{
 			losses++;
@@ -87,28 +89,12 @@ public class GameplayManager : MonoBehaviour {
 			} else {
 				FillCurrent();
 				//show lose round screen
-				ShowScreen(2);
+				uiManager.ShowScreenSM(2);
 			
 			}
 		}
 	}
-	private void ShowScreen(int correct){
-		//Disable the game ui to show the win/lose screen
-		gameplayPanel.SetActive (false);
-		switch (correct){
-		case 1:
-			winPanel.SetActive (true);
-			break;
-		case 2:
-			losePanel.SetActive (true);
-			break;
-		case 3:
-			winFighterPanel.SetActive (true);
-			break;
-		default:
-			break;
-		}
-	}
+
 	private void backupList(){
 
 	}
@@ -125,8 +111,7 @@ public class GameplayManager : MonoBehaviour {
 		}
 	}
 	public void ContiuneButton(GameObject activePanel){ //!rellenar los valores en el editor de unity¡
-		activePanel.SetActive (false);
-		gameplayPanel.SetActive (true);
+		uiManager.ShowScreenSM(4,activePanel);
 	}
 	#endregion
 }

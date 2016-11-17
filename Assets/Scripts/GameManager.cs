@@ -4,6 +4,10 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
+	#region private vars
+	private static GameManager instance = null;
+	#endregion
+
 	#region public vars
 	public static GameManager Instance {
 		get {
@@ -12,10 +16,6 @@ public class GameManager : MonoBehaviour {
 			return instance;
 		} 
 	}
-	#endregion
-
-	#region private vars
-	private static GameManager instance = null;
 	#endregion
 
 	#region Unity Methods
