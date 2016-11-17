@@ -51,5 +51,11 @@ public class GameManager : MonoBehaviour {
 	public void RestartScene(){
 		SceneManager.LoadScene (SceneManager.GetActiveScene ().buildIndex);
 	}
+	public void Menu(){
+		SceneManager.LoadScene ("MenuScene");
+	}
+	public void GameOver(){
+		SceneManager.LoadScene ("EndGameScene");
+	}
 	#endregion
 }
