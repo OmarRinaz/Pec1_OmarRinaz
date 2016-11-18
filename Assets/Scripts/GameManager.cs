@@ -26,14 +26,6 @@ public class GameManager : MonoBehaviour {
 			Destroy (this.gameObject);
 		DontDestroyOnLoad (this.gameObject);
 	}
-	// Use this for initialization
-	void Start () {
-	
-	}
-	// Update is called once per frame
-	void Update () {
-
-	}
 	#endregion
 
 	#region Game Application Managment METHODS

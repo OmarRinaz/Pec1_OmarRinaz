@@ -125,9 +125,8 @@ public class GameplayManager : MonoBehaviour {
 		//after the win round screen we actualize the ui
 		uiManager.ShowScreenSM(1);
 		string[] asking = new string[4];
-		for(int i =0 ; i <= 3;i++){
+		for(int i =0 ; i <asking.Length;i++){  //FLAG
 			asking [i] = qaListFull [i].questions [Random.Range (0, 1)];
-			Debug.Log (asking [i]);
 		}
 		uiManager.RenewUiAsking (asking);
 
@@ -135,20 +134,21 @@ public class GameplayManager : MonoBehaviour {
 	}
 	private void RoundLose(){
 		//if you dont awnser correct, then the machine scores a point and asks again, if the machine gots it correct, then its his turn to ask, we go back to what we were doing
-
+		FillCurrentAwnser();
 	}
 	private void backupList(){
 
 	}
 	#endregion
 	#region Public Methods
-	public void CheckAwnser(string text){ //Usar esto para verificar si el jugador acerto. !rellenar los valores en el editor de unity¡
-		totalRounds++;
+	public void CheckAwnser(string text){ //Usar esto para verificar si el jugador acerto.
 		if(text.Equals(currentCorrectAwnser)){
 			Debug.Log("Correcto"+ text);
 			//CheckRound (true); // WIP ROUNDWIN AND ROUNDLOSE SWITCH
+			wins++;
 			RoundWin ();
 		}else{
+			losses++;
 			Debug.Log("Incorrecto"+ text);
 			CheckRound (false);
 		}
@@ -165,7 +165,31 @@ public class GameplayManager : MonoBehaviour {
 		}
 	}
 	public void CheckQuestion(string text){
-		
+		// track the correct awnser for the player question choice.
+		int x = 0;
+		for (int i=0; i < qaListFull.Count; i++){
+			Debug.Log (i);
+			if (qaListFull [i].questions [0] == text||qaListFull [i].questions [1] == text) {
+				current = qaListFull [i];
+				Debug.Log ("found it");
+				x = Random.Range(0,3);
+				break;
+			} else {
+				if (i == 9)
+					Debug.Log ("wrong");
+			}
+		}
+		//randomize a reponse for the question
+		if (qaListFull [x].questions [0] == text||qaListFull [x].questions [1] == text) {
+			//MACHINE SCORESSSS
+			Debug.Log("MAchine Scoreeees");
+			RoundLose ();
+		} else {
+			//WHAT A FAIL FROM THE MACHINE OMG!
+			Debug.Log("MAchine faiiils"+"\t"+x+"\t"+text);
+			RoundWin ();
+
+		}
 	}
 	public void ContiuneButton(GameObject activePanel){ //!rellenar los valores en el editor de unity¡
 		if (activePanel.name == "WinPanel") {

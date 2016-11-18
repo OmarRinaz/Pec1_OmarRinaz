@@ -23,6 +23,19 @@ public class UiManager: MonoBehaviour{
 			return instance;
 		} 
 	}
+
+	void Awake(){
+		instance = this;
+
+		winPanel = GameObject.Find ("Canvas/WinPanel");
+		winFighterPanel = GameObject.Find ("Canvas/WinFighterPanel");
+		losePanel = GameObject.Find ("Canvas/LosePanel");
+		gameplayPanel = GameObject.Find ("Canvas/GameplayPanel");
+		currentQuestion = GameObject.Find ("Canvas/GameplayPanel/StoryGroup/MaskTextHistory/TextHistory").GetComponent<Text>();
+		buttonAwnser = new GameObject[4];
+
+	}
+
 	public void Init(){
 		gameplayManager = GameplayManager.Instance;
 		if (gameplayManager) {
@@ -42,17 +55,7 @@ public class UiManager: MonoBehaviour{
 		winFighterPanel.SetActive (false);
 
 	}
-	void Awake(){
-		instance = this;
 
-		winPanel = GameObject.Find ("Canvas/WinPanel");
-		winFighterPanel = GameObject.Find ("Canvas/WinFighterPanel");
-		losePanel = GameObject.Find ("Canvas/LosePanel");
-		gameplayPanel = GameObject.Find ("Canvas/GameplayPanel");
-		currentQuestion = GameObject.Find ("Canvas/GameplayPanel/StoryGroup/MaskTextHistory/TextHistory").GetComponent<Text>();
-		buttonAwnser = new GameObject[4];
-
-	}
 	void Test(){
 		
 		Debug.Log ("Hola roger");
@@ -91,6 +94,7 @@ public class UiManager: MonoBehaviour{
 		Shuffle (ref buttonAwnser); //out
 
 		for (int x = 0 ; x < buttonAwnser.Length ; x++){
+			buttonAwnser [x].transform.parent.GetComponent<Button> ().onClick.RemoveAllListeners();
 			AddListener (buttonAwnser [x].transform.parent.GetComponent<Button>(), buttonAwnser [x].GetComponent<Text> ().text, true);
 		}
 	}
@@ -99,7 +103,7 @@ public class UiManager: MonoBehaviour{
 		for (int i = 0; i < buttonAwnser.Length; i++) {
 			buttonAwnser [i].GetComponent<Text>().text = questions[i];
 			buttonAwnser [i].transform.parent.GetComponent<Button> ().onClick.RemoveAllListeners();
-			AddListener (buttonAwnser [i].transform.parent.GetComponent<Button> (), questions [i], false);
+			AddListener (buttonAwnser [i].transform.parent.GetComponent<Button> (),buttonAwnser [i].GetComponent<Text> ().text, false);
 		}
 	}
 	public void ShowScreenSM(int correct,GameObject activePanel=null){
