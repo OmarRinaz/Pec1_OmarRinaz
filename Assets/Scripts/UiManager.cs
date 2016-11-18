@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Collections;
@@ -12,6 +13,9 @@ public class UiManager: Object{
 	private GameObject gameplayPanel;
 	private GameObject[] buttonAwnser;
 	private string awnserPath = "Canvas/GameplayPanel/AwnserGroup/AwnserButton";
+	private GameplayManager gameplayManager;
+
+	private UnityAction action;
 
 	public Text currentQuestion;
 	public static UiManager Instance{
@@ -36,9 +40,18 @@ public class UiManager: Object{
 		winPanel.SetActive (false);
 		losePanel.SetActive (false);
 		winFighterPanel.SetActive (false);
-		RenewUi (awnsers);
+		RenewUiAwnsering (awnsers);
+		action = new UnityAction(Test);
+		gameplayManager = GameplayManager.Instance	;
+		buttonAwnser [0].transform.parent.GetComponent<Button> ().onClick.AddListener (action);
+
 	}
-	public void RenewUi(string[] awnsers, string currentCorrectAwnser=null ){
+
+	void Test(){
+		
+		Debug.Log ("Hola roger");
+	}
+	public void RenewUiAwnsering(string[] awnsers, string currentCorrectAwnser=null ){
 		for (int i = 0; i < 4; i++) {
 			buttonAwnser[i].GetComponent<Text> ().text = awnsers[i];
 		}
@@ -60,6 +73,19 @@ public class UiManager: Object{
 		buttonAwnser [4] = buttonAwnser [2];
 		buttonAwnser [2] = buttonAwnser [3];
 		buttonAwnser [3] = buttonAwnser [4];
+	}
+	public void RenewUiAsking(string[] questions){
+		//now put the questions in the answer buttons
+		for (int i = 0; i <= 3; i++) {
+			Debug.Log (buttonAwnser [i].transform.parent.GetComponent<Button>());
+			buttonAwnser [i].GetComponent<Text>().text = questions[i];
+			buttonAwnser [i].transform.parent.GetComponent<Button> ().onClick.SetPersistentListenerState (0, UnityEngine.Events.UnityEventCallState.RuntimeOnly);
+			buttonAwnser [i].transform.parent.GetComponent<Button> ().onClick.RemoveAllListeners();
+			buttonAwnser [i].transform.parent.GetComponent<Button> ().onClick.AddListener (() => 
+				//codigo listener
+				gameplayManager.CheckQuestion (questions [i])
+			);
+		}
 	}
 	public void ShowScreenSM(int correct,GameObject activePanel=null){
 		//state machine to control the ui panels

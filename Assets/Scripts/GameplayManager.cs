@@ -4,6 +4,16 @@ using System.Collections.Generic;
 using System.Collections;
 
 public class GameplayManager : MonoBehaviour {
+
+	private static GameplayManager instance = null;
+	public static GameplayManager Instance{
+		get {
+			if (instance == null)
+				GameplayManager.instance = new GameplayManager();
+			return GameplayManager.instance;
+		} 
+	}
+
 	#region public vars
 	public class QuestionAwnser {
 		public string[] questions;																				//Posibles preguntas
@@ -15,8 +25,9 @@ public class GameplayManager : MonoBehaviour {
 
 	#region private vars
 	private QuestionAwnser current;																				//Conjunto de preguntas/respuesta actual
-	private List<GameplayManager.QuestionAwnser> qaList = new List<GameplayManager.QuestionAwnser> ();			//Listado de preguntas/respuesta restante
-	private List<GameplayManager.QuestionAwnser> qaListFull = new List<GameplayManager.QuestionAwnser> ();		//backup del listado completo en caso de que se vuelva a empezar la partida.
+	private List<GameplayManager.QuestionAwnser> qaListAwnsering = new List<GameplayManager.QuestionAwnser> ();			//Listado de preguntas/respuesta restante
+	private List<GameplayManager.QuestionAwnser> qaListAsking = new List<GameplayManager.QuestionAwnser> ();
+	public List<GameplayManager.QuestionAwnser> qaListFull = new List<GameplayManager.QuestionAwnser> ();		//backup del listado completo en caso de que se vuelva a empezar la partida.
 	private string currentCorrectAwnser;
 	private int totalRounds=0;
 	private int wins=0;
@@ -29,27 +40,30 @@ public class GameplayManager : MonoBehaviour {
 	#endregion
 
 	#region Unity Methods
-	// Use this for initialization
-	void Start () {
-		//qaListFull = StoryFiller.FillList ();
+	void Awake(){
 		qaListFull = StoryFiller.FillListFromXml();
-		qaList.AddRange (qaListFull);
+		qaListAwnsering.AddRange (qaListFull);
+		qaListAsking.AddRange (qaListFull);
 		awnserParse = new string[qaListFull.Count + 1];
 		uiManager = UiManager.Instance;
 		for (int i = 0; i < qaListFull.Count; i++) {
 			awnserParse[i] = qaListFull[i].awnsers;
 		}
 		uiManager.Init (awnserParse);
-		FillCurrent ();
+	}
+	// Use this for initialization
+	void Start () {
+		//qaListFull = StoryFiller.FillList ();
+		FillCurrentAwnser ();
 	}
 	#endregion
 	#region Private Methods
-	private void FillCurrent(){
+	private void FillCurrentAwnser(){
 		try {
-			int position = Random.Range (0, qaList.Count);
-			Debug.Log (qaList.Count + "\t" + qaListFull.Count + "\t" + "wins"+wins+"   loses"+losses );
-			current = qaList[position];
-			qaList.RemoveAt (position);
+			int position = Random.Range (0, qaListAwnsering.Count);
+			Debug.Log (qaListAwnsering.Count + "\t" + qaListFull.Count + "\t" + "wins"+wins+"   loses"+losses );
+			current = qaListAwnsering[position];
+			qaListAwnsering.RemoveAt (position);
 			currentCorrectAwnser = current.awnsers;
 			uiManager.currentQuestion.text = current.questions [Random.Range (0, 1)]; //send current question to renew question ui
 			FillUI ();
@@ -60,7 +74,7 @@ public class GameplayManager : MonoBehaviour {
 	}
 	private void FillUI(){
 		//send current question to renew question ui
-		uiManager.RenewUi(awnserParse, currentCorrectAwnser);
+		uiManager.RenewUiAwnsering(awnserParse, currentCorrectAwnser);
 	}
 	private void CheckRound(bool correct){
 		if (correct) {
@@ -68,16 +82,16 @@ public class GameplayManager : MonoBehaviour {
 			if (wins == 2) {
 				//you win that fighter charge the new one
 				//also renew the list from the backup
-				qaList.Clear();
-				qaList.AddRange (qaListFull);
+				qaListAwnsering.Clear();
+				qaListAwnsering.AddRange (qaListFull);
 				//show new question.
-				FillCurrent();
+				FillCurrentAwnser();
 				//show the fighter win screen
 				wins=0;
 				uiManager.ShowScreenSM(3);
 			} else {
 				//show the win round screen.
-				FillCurrent();
+				FillCurrentAwnser();
 				uiManager.ShowScreenSM(1);
 			}
 		}else{
@@ -87,28 +101,53 @@ public class GameplayManager : MonoBehaviour {
 				//charge the Game Over scene
 				GameManager.Instance.GameOver();
 			} else {
-				FillCurrent();
+				FillCurrentAwnser();
 				//show lose round screen
 				uiManager.ShowScreenSM(2);
 			
 			}
 		}
 	}
+	private void RoundWin(){
+		//the machine starts aasking if you do correct then you ask, you allways score point for awnsering correct ot not being correctly awnsered
+		//here now we need to charge varius questions, to put it in the anwsers buttons we have on ui manager
 
+		//after the win round screen we actualize the ui
+		uiManager.ShowScreenSM(1);
+		string[] asking = new string[4];
+		for(int i =0 ; i <= 3;i++){
+			asking [i] = qaListFull [i].questions [Random.Range (0, 1)];
+			Debug.Log (asking [i]);
+		}
+		uiManager.RenewUiAsking (asking);
+
+
+	}
+	private void RoundLose(){
+		//if you dont awnser correct, then the machine scores a point and asks again, if the machine gots it correct, then its his turn to ask, we go back to what we were doing
+
+	}
 	private void backupList(){
 
 	}
 	#endregion
 	#region Public Methods
+
+
+
 	public void CheckAwnser(Text text){ //Usar esto para verificar si el jugador acerto. !rellenar los valores en el editor de unity¡
 		totalRounds++;
 		if(text.text.Equals(currentCorrectAwnser)){
 			Debug.Log("Correcto");
-			CheckRound (true);
+			CheckRound (true); // WIP ROUNDWIN AND ROUNDLOSE SWITCH
+			//RoundWin ();
 		}else{
 			Debug.Log("Incorrecto");
 			CheckRound (false);
 		}
+	}
+	public void CheckQuestion(string text){
+		Debug.Log (text);
 	}
 	public void ContiuneButton(GameObject activePanel){ //!rellenar los valores en el editor de unity¡
 		uiManager.ShowScreenSM(4,activePanel);
