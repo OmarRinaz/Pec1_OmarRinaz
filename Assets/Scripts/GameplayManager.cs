@@ -6,20 +6,22 @@ using System.Collections;
 public class GameplayManager : MonoBehaviour {
 
 	private static GameplayManager instance = null;
-	public static GameplayManager Instance{
+
+	#region public vars
+
+	public static GameplayManager Instance {
 		get {
 			if (instance == null)
-				GameplayManager.instance = new GameplayManager();
-			return GameplayManager.instance;
+				Debug.Log ("Error, GamePlay Manager does not exist. ¡Attach GameManager Script to a game object named GameManager!");
+			return instance;
 		} 
 	}
 
-	#region public vars
 	public class QuestionAwnser {
 		public string[] questions;																				//Posibles preguntas
 		public string awnsers;																					//Respuestas posibles
 	}
-	;
+
 	public string[] awnserParse;
 	#endregion
 
@@ -41,40 +43,48 @@ public class GameplayManager : MonoBehaviour {
 
 	#region Unity Methods
 	void Awake(){
+		if (instance == null)
+			instance = this;
+		else if (instance != this)
+			Destroy (this.gameObject);
+
 		qaListFull = StoryFiller.FillListFromXml();
 		qaListAwnsering.AddRange (qaListFull);
 		qaListAsking.AddRange (qaListFull);
-		awnserParse = new string[qaListFull.Count + 1];
+
+		awnserParse = new string[qaListFull.Count];
+
 		uiManager = UiManager.Instance;
+
 		for (int i = 0; i < qaListFull.Count; i++) {
 			awnserParse[i] = qaListFull[i].awnsers;
 		}
-		uiManager.Init (awnserParse);
+	
 	}
 	// Use this for initialization
 	void Start () {
 		//qaListFull = StoryFiller.FillList ();
+		uiManager.Init ();
 		FillCurrentAwnser ();
+
 	}
 	#endregion
 	#region Private Methods
 	private void FillCurrentAwnser(){
+
+		int position = Random.Range (0, qaListAwnsering.Count);
+		Debug.Log (qaListAwnsering.Count + "\t" + qaListFull.Count + "\t" + "wins"+wins+"   loses"+losses );
+		current = qaListAwnsering[position];
+		qaListAwnsering.RemoveAt (position);
+		currentCorrectAwnser = current.awnsers;
+		uiManager.currentQuestion.text = current.questions [Random.Range (0, 1)]; //send current question to renew question ui
+		uiManager.RenewUiAwnsering(awnserParse, currentCorrectAwnser);
 		try {
-			int position = Random.Range (0, qaListAwnsering.Count);
-			Debug.Log (qaListAwnsering.Count + "\t" + qaListFull.Count + "\t" + "wins"+wins+"   loses"+losses );
-			current = qaListAwnsering[position];
-			qaListAwnsering.RemoveAt (position);
-			currentCorrectAwnser = current.awnsers;
-			uiManager.currentQuestion.text = current.questions [Random.Range (0, 1)]; //send current question to renew question ui
-			FillUI ();
+
 		}
 		catch(System.Exception e){
 			Debug.LogError (e.Message); //what to do if try dosenot work
 		}
-	}
-	private void FillUI(){
-		//send current question to renew question ui
-		uiManager.RenewUiAwnsering(awnserParse, currentCorrectAwnser);
 	}
 	private void CheckRound(bool correct){
 		if (correct) {
@@ -132,25 +142,38 @@ public class GameplayManager : MonoBehaviour {
 	}
 	#endregion
 	#region Public Methods
-
-
-
+	public void CheckAwnser(string text){ //Usar esto para verificar si el jugador acerto. !rellenar los valores en el editor de unity¡
+		totalRounds++;
+		if(text.Equals(currentCorrectAwnser)){
+			Debug.Log("Correcto"+ text);
+			//CheckRound (true); // WIP ROUNDWIN AND ROUNDLOSE SWITCH
+			RoundWin ();
+		}else{
+			Debug.Log("Incorrecto"+ text);
+			CheckRound (false);
+		}
+	}
 	public void CheckAwnser(Text text){ //Usar esto para verificar si el jugador acerto. !rellenar los valores en el editor de unity¡
 		totalRounds++;
 		if(text.text.Equals(currentCorrectAwnser)){
-			Debug.Log("Correcto");
-			CheckRound (true); // WIP ROUNDWIN AND ROUNDLOSE SWITCH
-			//RoundWin ();
+			Debug.Log("Correcto"+ text.text);
+			//CheckRound (true); // WIP ROUNDWIN AND ROUNDLOSE SWITCH
+			RoundWin ();
 		}else{
-			Debug.Log("Incorrecto");
+			Debug.Log("Incorrecto"+ text.text);
 			CheckRound (false);
 		}
 	}
 	public void CheckQuestion(string text){
-		Debug.Log (text);
+		
 	}
 	public void ContiuneButton(GameObject activePanel){ //!rellenar los valores en el editor de unity¡
-		uiManager.ShowScreenSM(4,activePanel);
+		if (activePanel.name == "WinPanel") {
+			uiManager.ShowScreenSM (5, activePanel);
+		}else{
+			uiManager.ShowScreenSM(4,activePanel);
+		}
+
 	}
 	#endregion
 }

@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour {
 	}
 	// Use this to start the game / usar esto para empezar el juego
 	public void NewGame(){
-		SceneManager.LoadScene ("NewGameScene");
+		SceneManager.LoadSceneAsync ("NewGameScene");
 	}
 	// Use this to restart the current scene / usar esto para reiniciar la escena actual
 	public void RestartScene(){

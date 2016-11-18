@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Collections;
 
-public class UiManager: Object{
+public class UiManager: MonoBehaviour{
 
 	private static UiManager instance = null;
 	private GameObject winPanel;
@@ -14,49 +14,70 @@ public class UiManager: Object{
 	private GameObject[] buttonAwnser;
 	private string awnserPath = "Canvas/GameplayPanel/AwnserGroup/AwnserButton";
 	private GameplayManager gameplayManager;
-
-	private UnityAction action;
-
 	public Text currentQuestion;
-	public static UiManager Instance{
+
+	public static UiManager Instance {
 		get {
 			if (instance == null)
-				UiManager.instance = new UiManager();
-			return UiManager.instance;
+				Debug.Log ("Error, GameManager does not exist. ¡Attach GameManager Script to a game object named GameManager!");
+			return instance;
 		} 
 	}
+	public void Init(){
+		gameplayManager = GameplayManager.Instance;
+		if (gameplayManager) {
+			Debug.Log ("ui exist");
+		} else {
+			Debug.Log ("ui exist no exist");
+		}
 
-	public void Init(string[] awnsers){ 
+		for (int i = 0; i < buttonAwnser.Length; i++) {
+			buttonAwnser [i] = GameObject.Find (awnserPath + " (" + i + ")" + "/AwnserTextButton (" + i + ")");
+			Button button = buttonAwnser [i].transform.parent.GetComponent<Button> ();
+			AddListener (button, gameplayManager.awnserParse[i],true);
+		}
+
+		winPanel.SetActive (false);
+		losePanel.SetActive (false);
+		winFighterPanel.SetActive (false);
+
+	}
+	void Awake(){
+		instance = this;
+
 		winPanel = GameObject.Find ("Canvas/WinPanel");
 		winFighterPanel = GameObject.Find ("Canvas/WinFighterPanel");
 		losePanel = GameObject.Find ("Canvas/LosePanel");
 		gameplayPanel = GameObject.Find ("Canvas/GameplayPanel");
 		currentQuestion = GameObject.Find ("Canvas/GameplayPanel/StoryGroup/MaskTextHistory/TextHistory").GetComponent<Text>();
-		buttonAwnser = new GameObject[5];
-		buttonAwnser[0] = GameObject.Find (awnserPath + "/AwnserTextButton");
-		buttonAwnser[1] = GameObject.Find (awnserPath + " (1)" + "/AwnserTextButton (1)");
-		buttonAwnser[2] = GameObject.Find (awnserPath + " (2)" + "/AwnserTextButton (2)");
-		buttonAwnser[3] = GameObject.Find (awnserPath + " (3)" + "/AwnserTextButton (3)");
-		winPanel.SetActive (false);
-		losePanel.SetActive (false);
-		winFighterPanel.SetActive (false);
-		RenewUiAwnsering (awnsers);
-		action = new UnityAction(Test);
-		gameplayManager = GameplayManager.Instance	;
-		buttonAwnser [0].transform.parent.GetComponent<Button> ().onClick.AddListener (action);
+		buttonAwnser = new GameObject[4];
 
 	}
-
 	void Test(){
 		
 		Debug.Log ("Hola roger");
 	}
+
+	void AddListener(Button b, string value, bool i) 
+	{
+		b.onClick.RemoveAllListeners();
+		if (i) {
+			b.onClick.AddListener (() => {
+				gameplayManager.CheckAwnser (value);
+			});
+		} else {
+			b.onClick.AddListener (() => {
+				gameplayManager.CheckQuestion (value);
+			});
+		}
+	}
+
 	public void RenewUiAwnsering(string[] awnsers, string currentCorrectAwnser=null ){
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < buttonAwnser.Length; i++) {
 			buttonAwnser[i].GetComponent<Text> ().text = awnsers[i];
 		}
 		bool noAwnser = false;
-		for (int i = 0; i < buttonAwnser.Length-1; i++) {
+		for (int i = 0; i < buttonAwnser.Length; i++) {
 			if (currentCorrectAwnser != buttonAwnser [i].GetComponent<Text>().text) {
 				noAwnser=true;
 				Debug.Log ("changing"+"\t"+i);
@@ -67,24 +88,18 @@ public class UiManager: Object{
 		}
 		if(noAwnser)
 			buttonAwnser[Random.Range (0, 3)].GetComponent<Text> ().text = currentCorrectAwnser;
-		buttonAwnser [4] = buttonAwnser [0];
-		buttonAwnser [0] = buttonAwnser [1];
-		buttonAwnser [1] = buttonAwnser [4];
-		buttonAwnser [4] = buttonAwnser [2];
-		buttonAwnser [2] = buttonAwnser [3];
-		buttonAwnser [3] = buttonAwnser [4];
+		Shuffle (ref buttonAwnser); //out
+
+		for (int x = 0 ; x < buttonAwnser.Length ; x++){
+			AddListener (buttonAwnser [x].transform.parent.GetComponent<Button>(), buttonAwnser [x].GetComponent<Text> ().text, true);
+		}
 	}
 	public void RenewUiAsking(string[] questions){
 		//now put the questions in the answer buttons
-		for (int i = 0; i <= 3; i++) {
-			Debug.Log (buttonAwnser [i].transform.parent.GetComponent<Button>());
+		for (int i = 0; i < buttonAwnser.Length; i++) {
 			buttonAwnser [i].GetComponent<Text>().text = questions[i];
-			buttonAwnser [i].transform.parent.GetComponent<Button> ().onClick.SetPersistentListenerState (0, UnityEngine.Events.UnityEventCallState.RuntimeOnly);
 			buttonAwnser [i].transform.parent.GetComponent<Button> ().onClick.RemoveAllListeners();
-			buttonAwnser [i].transform.parent.GetComponent<Button> ().onClick.AddListener (() => 
-				//codigo listener
-				gameplayManager.CheckQuestion (questions [i])
-			);
+			AddListener (buttonAwnser [i].transform.parent.GetComponent<Button> (), questions [i], false);
 		}
 	}
 	public void ShowScreenSM(int correct,GameObject activePanel=null){
@@ -104,9 +119,22 @@ public class UiManager: Object{
 			activePanel.SetActive (false);
 			gameplayPanel.SetActive (true);
 			break;
+		case 5:
+			activePanel.SetActive (false);
+			gameplayPanel.SetActive (true);
+			gameplayPanel.transform.FindChild ("StoryGroup").gameObject.SetActive (false);
+			break;
 		default:
 			break;
 		}
 	}
+	private void Shuffle(ref GameObject[] toShuffle ){
+		for (int i = 0; i < toShuffle.Length; i++) {
+			GameObject temp = toShuffle [i];
+			int x = Random.Range (i, toShuffle.Length);
+			toShuffle [i] = toShuffle [x];
+			toShuffle [x] = temp;
+		}
 
+	}
 }
