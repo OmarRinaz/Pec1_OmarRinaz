@@ -1,11 +1,16 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
+using UnityEngine.UI;
+using System.Collections.Generic;
 using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
 	public AudioSource audioPlayer;
 	public AudioClip[] clip ;
+	private Button firstBut;
+	private Button secondBut;
 	#region private vars
 	private static GameManager instance = null;
 	#endregion
@@ -33,6 +38,9 @@ public class GameManager : MonoBehaviour {
 		audioPlayer.loop = true;
 		audioPlayer.clip = clip[0];
 		audioPlayer.Play ();
+		firstBut = GameObject.Find ("NewGameButton").GetComponent<Button> ();
+
+		AddListener ();
 	}
 	void start(){
 //		string filePath =Application.dataPath+"Song1";             //CANT LOAD OGG FILES
@@ -42,13 +50,17 @@ public class GameManager : MonoBehaviour {
 
 		Debug.Log (clip);
 	}
+	void Init(){
+//		secondBut = GameObject.Find ("SalirButton").GetComponent<Button> ();
+		AddListener ();
+	}
 	#endregion
 
 	#region Game Application Managment METHODS
 	// Use this for exit / usar esto para salir
 	public void ExitGame(){
 		Debug.Log ("Closing Application / Cerrando Aplicación");
-		if (UnityEditor.EditorApplication.isPlaying) UnityEditor.EditorApplication.isPlaying = false; //use this for editor / usar esto para el editor
+//		if (UnityEditor.EditorApplication.isPlaying) UnityEditor.EditorApplication.isPlaying = false; //use this for editor / usar esto para el editor
 		Application.Quit ();
 	}
 	// Use this to start the game / usar esto para empezar el juego
@@ -66,15 +78,33 @@ public class GameManager : MonoBehaviour {
 	}
 	public void Menu(){
 		SceneManager.LoadScene ("MenuScene");
-		audioPlayer.clip = clip[0];
-		audioPlayer.Play ();
+		firstBut = GameObject.Find ("NewGameButton").GetComponent<Button> ();
+
+		Init ();
+
 	}
 	public void GameOver(){
 
 		SceneManager.LoadScene ("EndGameScene");
+
 		audioPlayer.clip = clip[2];
 		audioPlayer.Play ();
 		GameManager.Instance.audioPlayer.PlayOneShot (GameManager.Instance.clip [4]);
+	
 	}
+	void AddListener() 
+	{
+		secondBut = GameObject.Find ("SalirButton").GetComponent<Button> ();
+		firstBut.onClick.RemoveAllListeners ();
+		firstBut.onClick.AddListener (() => {
+			NewGame();
+		});
+		secondBut.onClick.RemoveAllListeners ();
+		secondBut.onClick.AddListener (() => {
+			ExitGame();
+		});
+	}
+
 	#endregion
+
 }
