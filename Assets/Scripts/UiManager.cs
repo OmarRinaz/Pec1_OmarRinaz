@@ -10,9 +10,10 @@ public class UiManager: MonoBehaviour{
 	private GameObject winPanel;
 	private GameObject winFighterPanel;
 	private GameObject losePanel;
-	private GameObject gameplayPanel;
+//	private GameObject gameplayPanel;
 	private GameObject storyPanel;
 	private GameObject awnserPanel;
+	private GameObject pausePanel;
 	private GameObject[] buttonAwnser;
 	private string awnserPath = "Canvas/GameplayPanel/AwnserGroup/AwnserButton";
 	private GameplayManager gameplayManager;
@@ -28,17 +29,19 @@ public class UiManager: MonoBehaviour{
 
 	void Awake(){
 		instance = this;
+		pausePanel = GameObject.Find ("Canvas/PausePanel");
 		storyPanel =GameObject.Find ("Canvas/GameplayPanel/StoryGroup");
 		awnserPanel =GameObject.Find ("Canvas/GameplayPanel/AwnserGroup");
 		winPanel = GameObject.Find ("Canvas/WinPanel");
 		winFighterPanel = GameObject.Find ("Canvas/WinFighterPanel");
 		losePanel = GameObject.Find ("Canvas/LosePanel");
-		gameplayPanel = GameObject.Find ("Canvas/GameplayPanel");
+//		gameplayPanel = GameObject.Find ("Canvas/GameplayPanel");
 		currentQuestion = GameObject.Find ("Canvas/GameplayPanel/StoryGroup/MaskTextHistory/TextHistory").GetComponent<Text>();
 		buttonAwnser = new GameObject[4];
 		winPanel.SetActive (false);
 		losePanel.SetActive (false);
 		winFighterPanel.SetActive (false);
+		pausePanel.SetActive (false);
 	}
 
 	public void Init(){
@@ -141,6 +144,13 @@ public class UiManager: MonoBehaviour{
 		
 			} else {
 				awnserPanel.SetActive (false);				
+			}
+			break;
+		case "activePausePanel"://6
+			if (mode) {
+				pausePanel.SetActive (true);
+			} else {
+				pausePanel.SetActive (false);
 			}
 			break;
 		default:

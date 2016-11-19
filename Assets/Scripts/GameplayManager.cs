@@ -62,7 +62,12 @@ public class GameplayManager : MonoBehaviour {
 		//qaListFull = StoryFiller.FillList ();// old way, now is in awake and charges from an xml
 		uiManager.Init ();
 		FillCurrentAwnser ();
-
+		GameManager.Instance.audioPlayer.clip = GameManager.Instance.clip[1];
+		GameManager.Instance.audioPlayer.Play ();
+	}
+	void Update(){
+		if(Input.GetKey("escape"))
+			GamePause();
 	}
 	#endregion
 
@@ -207,6 +212,15 @@ public class GameplayManager : MonoBehaviour {
 		uiManager.ShowScreenSM("active"+activePanel.name,false);
 		uiManager.ShowScreenSM("activeStoryPanel",true);
 		uiManager.ShowScreenSM ("activeAwnserPanel", true);
+	}
+	public void GamePause(){
+				uiManager.ShowScreenSM("activePausePanel",true);
+
+		Time.timeScale = 0f;
+	}
+	public void ExitPause(){
+		uiManager.ShowScreenSM("activePausePanel",false);
+		Time.timeScale = 1f;
 	}
 	#endregion
 }

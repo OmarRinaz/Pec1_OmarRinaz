@@ -9,8 +9,8 @@ public class GameManager : MonoBehaviour {
 
 	public AudioSource audioPlayer;
 	public AudioClip[] clip ;
-	private Button firstBut;
-	private Button secondBut;
+	public Button firstBut;
+	public Button secondBut;
 	#region private vars
 	private static GameManager instance = null;
 	#endregion
@@ -39,19 +39,22 @@ public class GameManager : MonoBehaviour {
 		audioPlayer.clip = clip[0];
 		audioPlayer.Play ();
 		firstBut = GameObject.Find ("NewGameButton").GetComponent<Button> ();
-
+		secondBut = GameObject.Find ("SalirButton").GetComponent<Button> ();
 		AddListener ();
 	}
 	void start(){
-//		string filePath =Application.dataPath+"Song1";             //CANT LOAD OGG FILES
-//		clip[0] = (AudioClip)Resources.Load<AudioClip>("Song1") ;
-//		clip[0] = Resources.Load<AudioClip>("Song1") ;
-//		clip[0] = Resources.Load("Song1")as AudioClip ;
-
 		Debug.Log (clip);
 	}
+	void Update(){
+		if (!firstBut && SceneManager.GetActiveScene ().name == "MenuScene") {
+			Init ();
+		}
+	}
+		
 	void Init(){
 //		secondBut = GameObject.Find ("SalirButton").GetComponent<Button> ();
+		firstBut = GameObject.Find ("NewGameButton").GetComponent<Button> ();
+		secondBut = GameObject.Find ("SalirButton").GetComponent<Button> ();
 		AddListener ();
 	}
 	#endregion
@@ -67,8 +70,10 @@ public class GameManager : MonoBehaviour {
 	public void NewGame(){
 		GameManager.Instance.audioPlayer.PlayOneShot (GameManager.Instance.clip [5]);
 		SceneManager.LoadSceneAsync ("NewGameScene");
-		audioPlayer.clip = clip[1];
-		audioPlayer.Play ();
+		if (SceneManager.GetActiveScene ().name == "MenuScene") {
+			audioPlayer.clip = clip [1];
+			audioPlayer.Play ();
+		}
 	}
 	// Use this to restart the current scene / usar esto para reiniciar la escena actual
 	public void RestartScene(){
@@ -78,23 +83,19 @@ public class GameManager : MonoBehaviour {
 	}
 	public void Menu(){
 		SceneManager.LoadScene ("MenuScene");
-		firstBut = GameObject.Find ("NewGameButton").GetComponent<Button> ();
-
-		Init ();
-
+		//Init ();
+		Debug.Log (SceneManager.GetActiveScene ().name);
 	}
 	public void GameOver(){
-
 		SceneManager.LoadScene ("EndGameScene");
-
 		audioPlayer.clip = clip[2];
 		audioPlayer.Play ();
 		GameManager.Instance.audioPlayer.PlayOneShot (GameManager.Instance.clip [4]);
-	
 	}
+
 	void AddListener() 
 	{
-		secondBut = GameObject.Find ("SalirButton").GetComponent<Button> ();
+		
 		firstBut.onClick.RemoveAllListeners ();
 		firstBut.onClick.AddListener (() => {
 			NewGame();
