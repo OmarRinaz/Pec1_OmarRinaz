@@ -11,6 +11,8 @@ public class UiManager: MonoBehaviour{
 	private GameObject winFighterPanel;
 	private GameObject losePanel;
 	private GameObject gameplayPanel;
+	private GameObject storyPanel;
+	private GameObject awnserPanel;
 	private GameObject[] buttonAwnser;
 	private string awnserPath = "Canvas/GameplayPanel/AwnserGroup/AwnserButton";
 	private GameplayManager gameplayManager;
@@ -26,14 +28,17 @@ public class UiManager: MonoBehaviour{
 
 	void Awake(){
 		instance = this;
-
+		storyPanel =GameObject.Find ("Canvas/GameplayPanel/StoryGroup");
+		awnserPanel =GameObject.Find ("Canvas/GameplayPanel/AwnserGroup");
 		winPanel = GameObject.Find ("Canvas/WinPanel");
 		winFighterPanel = GameObject.Find ("Canvas/WinFighterPanel");
 		losePanel = GameObject.Find ("Canvas/LosePanel");
 		gameplayPanel = GameObject.Find ("Canvas/GameplayPanel");
 		currentQuestion = GameObject.Find ("Canvas/GameplayPanel/StoryGroup/MaskTextHistory/TextHistory").GetComponent<Text>();
 		buttonAwnser = new GameObject[4];
-
+		winPanel.SetActive (false);
+		losePanel.SetActive (false);
+		winFighterPanel.SetActive (false);
 	}
 
 	public void Init(){
@@ -50,9 +55,7 @@ public class UiManager: MonoBehaviour{
 			AddListener (button, gameplayManager.awnserParse[i],true);
 		}
 
-		winPanel.SetActive (false);
-		losePanel.SetActive (false);
-		winFighterPanel.SetActive (false);
+	
 
 	}
 
@@ -83,7 +86,7 @@ public class UiManager: MonoBehaviour{
 		for (int i = 0; i < buttonAwnser.Length; i++) {
 			if (currentCorrectAwnser != buttonAwnser [i].GetComponent<Text>().text) {
 				noAwnser=true;
-				Debug.Log ("changing"+"\t"+i);
+				//Debug.Log ("changing"+"\t"+i);
 			} else {
 				noAwnser=false;
 				break;
@@ -106,27 +109,64 @@ public class UiManager: MonoBehaviour{
 			AddListener (buttonAwnser [i].transform.parent.GetComponent<Button> (),buttonAwnser [i].GetComponent<Text> ().text, false);
 		}
 	}
-	public void ShowScreenSM(int correct,GameObject activePanel=null){
+	public void ShowScreenSM(string target,bool mode){
 		//state machine to control the ui panels
-		gameplayPanel.SetActive (false);
-		switch (correct){
-		case 1:
-			winPanel.SetActive (true);
+		//gameplayPanel.SetActive (false);
+		switch (target){
+		case "activeWinPanel":  //1
+			if (mode) {
+				if (!winPanel.activeInHierarchy){
+					winPanel.SetActive (true); //if you win a round activate that
+				}
+			} else {
+				if (winPanel.activeInHierarchy) {
+					winPanel.SetActive (false); 
+				}
+			}
 			break;
-		case 2:
-			losePanel.SetActive (true);
+		case "activeLosePanel": //2
+			if (mode) {
+				if (!losePanel.activeInHierarchy){
+					losePanel.SetActive (true);
+				}
+			} else {
+				if (losePanel.activeInHierarchy){
+					losePanel.SetActive (false);
+				}
+			}
 			break;
-		case 3:
-			winFighterPanel.SetActive (true);
+		case "activeWinFighterPanel": //3
+			if (mode) {
+				if (!winFighterPanel.activeInHierarchy){
+					winFighterPanel.SetActive (true);
+				}
+			} else {
+				if (winFighterPanel.activeInHierarchy) {
+					winFighterPanel.SetActive (false);
+				}
+			}
 			break;
-		case 4:
-			activePanel.SetActive (false);
-			gameplayPanel.SetActive (true);
+		case "activeStoryPanel": //4
+			if (mode) {
+				if (!storyPanel.activeSelf) {
+					storyPanel.SetActive (true);
+				}
+			} else {
+				
+					storyPanel.SetActive (false);
+
+			}
 			break;
-		case 5:
-			activePanel.SetActive (false);
-			gameplayPanel.SetActive (true);
-			gameplayPanel.transform.FindChild ("StoryGroup").gameObject.SetActive (false);
+		case "activeAwnserPanel": //5
+			if (mode) {
+				if (!awnserPanel.activeInHierarchy){
+					awnserPanel.SetActive (true);
+				}
+			} else {
+				if (awnserPanel.activeInHierarchy){
+					awnserPanel.SetActive (false);
+				}
+			}
 			break;
 		default:
 			break;
@@ -139,6 +179,36 @@ public class UiManager: MonoBehaviour{
 			toShuffle [i] = toShuffle [x];
 			toShuffle [x] = temp;
 		}
-
 	}
 }
+//break;
+//case 2:
+//losePanel.SetActive (true);//if you lose a round no mater what trigger that
+//break;
+//case 3:
+//winFighterPanel.SetActive (true);//if you finaly win the fighter fire that one
+//break;
+//case 4:
+//activePanel.SetActive (false);//triger that when 
+//gameplayPanel.SetActive (true);
+//break;
+//case 5:
+//activePanel.SetActive (false);
+//gameplayPanel.SetActive (true);
+//gameplayPanel.transform.FindChild ("StoryGroup").gameObject.SetActive (false);
+//break;
+//case 6:
+////activePanel.SetActive (false);
+//if(winPanel.activeInHierarchy)winPanel.SetActive (true);//if you finaly win the fighter fire that one)
+//gameplayPanel.SetActive (true);
+//gameplayPanel.transform.FindChild ("AwnserGroup").gameObject.SetActive (false);
+//gameplayPanel.transform.FindChild ("StoryGroup").gameObject.SetActive (true);
+//break;
+//case 7:
+//gameplayPanel.transform.FindChild ("StoryGroup").gameObject.SetActive (true);
+//gameplayPanel.transform.FindChild ("AwnserGroup").gameObject.SetActive (true);
+//break;
+//case 8:
+//gameplayPanel.transform.FindChild ("StoryGroup").gameObject.SetActive (false);
+//gameplayPanel.transform.FindChild ("AwnserGroup").gameObject.SetActive (false);
+//break;
