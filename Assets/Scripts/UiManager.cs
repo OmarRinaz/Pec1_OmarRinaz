@@ -58,12 +58,6 @@ public class UiManager: MonoBehaviour{
 	
 
 	}
-
-	void Test(){
-		
-		Debug.Log ("Hola roger");
-	}
-
 	void AddListener(Button b, string value, bool i) 
 	{
 		b.onClick.RemoveAllListeners();
@@ -115,57 +109,38 @@ public class UiManager: MonoBehaviour{
 		switch (target){
 		case "activeWinPanel":  //1
 			if (mode) {
-				if (!winPanel.activeInHierarchy){
 					winPanel.SetActive (true); //if you win a round activate that
-				}
 			} else {
-				if (winPanel.activeInHierarchy) {
 					winPanel.SetActive (false); 
-				}
 			}
 			break;
 		case "activeLosePanel": //2
 			if (mode) {
-				if (!losePanel.activeInHierarchy){
 					losePanel.SetActive (true);
-				}
 			} else {
-				if (losePanel.activeInHierarchy){
 					losePanel.SetActive (false);
-				}
 			}
 			break;
 		case "activeWinFighterPanel": //3
 			if (mode) {
-				if (!winFighterPanel.activeInHierarchy){
 					winFighterPanel.SetActive (true);
-				}
 			} else {
-				if (winFighterPanel.activeInHierarchy) {
 					winFighterPanel.SetActive (false);
-				}
 			}
 			break;
 		case "activeStoryPanel": //4
 			if (mode) {
-				if (!storyPanel.activeSelf) {
-					storyPanel.SetActive (true);
-				}
-			} else {
-				
-					storyPanel.SetActive (false);
-
+				storyPanel.SetActive (true);
+			} else {				
+				storyPanel.SetActive (false);
 			}
 			break;
 		case "activeAwnserPanel": //5
 			if (mode) {
-				if (!awnserPanel.activeInHierarchy){
-					awnserPanel.SetActive (true);
-				}
+				awnserPanel.SetActive (true);
+		
 			} else {
-				if (awnserPanel.activeInHierarchy){
-					awnserPanel.SetActive (false);
-				}
+				awnserPanel.SetActive (false);				
 			}
 			break;
 		default:

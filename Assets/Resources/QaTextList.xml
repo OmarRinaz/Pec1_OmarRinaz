@@ -2,23 +2,23 @@
 <questions>
 	<question>
 		<first>¡No hay palabras para describir lo asqueroso que eres!</first>
-		<second>Ya no hay técnicas que te puedan salvar.</second>
+		<second>¡Ya no hay técnicas que te puedan salvar!</second>
 		<awnser>Sí que las hay, sólo que nunca las has aprendido.</awnser>
 	</question>
 	<question>
 		<first>¡Obtuve esta cicatriz en mi cara en una lucha a muerte!</first>
-		<second>En mi última pelea terminé con las manos llenas de sangre.</second>
+		<second>¡En mi última pelea terminé con las manos llenas de sangre!</second>
 		<awnser>Espero que ya hayas aprendido a no tocarte la nariz.</awnser>
 	</question>	
 	<question>
 		<first>!Una vez tuve un perro más listo que tú!</first>
-		<second>Sólo he conocido a uno tan cobarde como tú.</second>
+		<second>¡Sólo he conocido a uno tan cobarde como tú!</second>
 		<awnser>Te habrá enseñado todo lo que sabes.</awnser>
 	</question>	
 	<question>
 		<first>¡La gente cae a mis pies al verme llegar!</first>
 		<second>Mis enemigos más sabios corren al verme llegar.</second>
-		<awnser>¿Incluso antes de que huelan tu aliento?</awnser>
+		<awnser>¿Incluso antes de que huelan tu aliento?...</awnser>
 	</question>		
 	<question>
 		<first>!Tienes los modales de un mendigo!</first>
@@ -31,24 +31,24 @@
 		<awnser>Estaría acabado si la usases alguna vez.</awnser>
 	</question>
 	<question>
-		<first>¿Llevarás mi espada como si fueras un pincho moruno!</first>
-		<second>Mi lengua es más hábil que cualquier espada.</second>
+		<first>¡Llevarás mi espada como si fueras un pincho moruno!</first>
+		<second>¡Mi lengua es más hábil que cualquier espada!</second>
 		<awnser>Primero deberías dejar de usarla como un plumero.</awnser>
 	</question>
 	<question>
 		<first>¡He hablado con simios más educados que tu!</first>
-		<second>Ahora entiendo lo que significan basura y estupidez.</second>
+		<second>¡Ahora entiendo lo que significan basura y estupidez!</second>
 		<awnser>Me alegra que asistieras a tu reunión familiar diaria.</awnser>
 	</question>
 	<question>
 		<first>¡Luchas como un ganadero!</first>
-		<second>¡Ordeñaré hasta la última gota de sangre de tu cuerpo</second>
+		<second>¡Ordeñaré hasta la última gota de sangre de tu cuerpo!</second>
 		<awnser>Qué apropiado, tú peleas como una vaca.</awnser>
 	</question>
 	<question>
 		<first>¡No pienso aguantar tu insolencia aquí sentado!</first>
 		<second>¡Eres como un dolor en la parte baja de la espalda!</second>
-		<awnser>Ya te están fastidiando otra vez las almorranas, ¿eh?</awnser>
+		<awnser>Ya te están fastidiando otra vez las almorranas, ¿eh?...</awnser>
 	</question>
 </questions>
 <!-- sample :

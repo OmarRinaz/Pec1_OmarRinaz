@@ -42,6 +42,7 @@ public class GameplayManager : MonoBehaviour {
 
 	#region Unity Methods
 	void Awake(){
+		
 		if (instance == null)
 			instance = this;
 		else if (instance != this)
@@ -50,17 +51,13 @@ public class GameplayManager : MonoBehaviour {
 		qaListFull = StoryFiller.FillListFromXml();
 		qaListAwnsering.AddRange (qaListFull);
 		qaListAsking.AddRange (qaListFull);
-
 		awnserParse = new string[qaListFull.Count];
-
 		uiManager = UiManager.Instance;
-
 		for (int i = 0; i < qaListFull.Count; i++) {
 			awnserParse[i] = qaListFull[i].awnsers;
 		}
-	
 	}
-	// Use this for initialization
+
 	void Start () {
 		//qaListFull = StoryFiller.FillList ();// old way, now is in awake and charges from an xml
 		uiManager.Init ();
@@ -68,39 +65,46 @@ public class GameplayManager : MonoBehaviour {
 
 	}
 	#endregion
+
 	#region Private Methods
 	private void FillCurrentAwnser(){
 		int position = Random.Range (0, qaListAwnsering.Count);
 		Debug.Log (qaListAwnsering.Count + "\t" + qaListFull.Count + "\t" + "wins"+wins+"   loses"+losses );
 		current = qaListAwnsering[position];
-		//qaListAwnsering.RemoveAt (position); //no need to remove (old unidirectional system player only awnsers)
+		qaListAwnsering.RemoveAt (position); //no need to remove (old unidirectional system player only awnsers)
 		currentCorrectAwnser = current.awnsers;
-		uiManager.currentQuestion.text = current.questions [Random.Range (0, 1)]; //send current question to renew question ui
+		 //send current question to renew question ui
 		uiManager.RenewUiAwnsering(awnserParse, currentCorrectAwnser);
-
+		uiManager.currentQuestion.text =uiManager.currentQuestion.text+"\n"+" - Rigby : " +current.questions [Random.Range (0, 1)];
 //		try {
 //		}
 //		catch(System.Exception e){
 //			Debug.LogError (e.Message); //what to do if try dosenot work
 //		}
-
 	}
+
 	private void CheckRound(){
-		if (wins == 2) {
-			Debug.Log ("YOU WIN THIS SARCASTIC FIGHT BRO!");
-			FillCurrentAwnser ();
-			//uiManager.ShowScreenSM (6);
+		if (wins==2) {
+			Debug.Log ("YOU WIN 2 rounds in a row");
+			//FillCurrentAwnser (); 
+			uiManager.ShowScreenSM ("activeAwnserPanel", false);
+			uiManager.ShowScreenSM ("activeWinPanel", false);
+			uiManager.ShowScreenSM ("activeWinFighterPanel",true);
+			wins = 0;
+			GameManager.Instance.audioPlayer.PlayOneShot (GameManager.Instance.clip [3]);
 		}
 		if (losses == 2) {
+			
 			Debug.Log ("BETTER IMPROVE BCUSE YOU LOST");
+
 			GameManager.Instance.GameOver ();
 		}
 	}
+
 	private void RoundWin(){
 		
 		//the machine starts aasking if you do correct then you ask, you allways score point for awnsering correct ot not being correctly awnsered
 		//here now we need to charge varius questions, to put it in the anwsers buttons we have on ui manager
-		//uiManager.ShowScreenSM(1);
 	
 		//after the win round screen we actualize the ui
 		string[] asking = new string[4];
@@ -109,55 +113,62 @@ public class GameplayManager : MonoBehaviour {
 		}
 		uiManager.RenewUiAsking (asking);
 		Debug.Log ("\t" + "RENEW QUESTIONS");
+		CheckRound();
+		//uiManager.currentQuestion.text =
 	}
 
 	private void RoundLose(){
 		//if you dont awnser correct, then the machine scores a point and asks again, if the machine gots it correct, then its his turn to ask, we go back to what we were doing
-		CheckRound();
+	
 		FillCurrentAwnser();
+		CheckRound();
 	}
-
 	#endregion
+
 	#region Public Methods
 	public void CheckAwnser(string text){ //Usar esto para verificar si el jugador acerto.
 		//uiManager.ShowScreenSM("activeStoryPanel",false);
-		uiManager.ShowScreenSM("activeStoryPanel",false);
+		GameManager.Instance.audioPlayer.PlayOneShot (GameManager.Instance.clip [5]);
+		Debug.Log("comprobar respuesta desde string");
 		CheckRound();
 		if(text.Equals(currentCorrectAwnser)){
 			wins++;
 			Debug.Log("Correcto"+ text+"\t"+"wins"+wins+"   loses"+losses );
 			RoundWin ();
+			uiManager.ShowScreenSM ("activeWinPanel", true);
 		}else{
 			losses++;
 			Debug.Log("Incorrecto"+ text);
 			RoundLose ();
+			uiManager.ShowScreenSM ("activeLosePanel", true);
 		}
-	
-//		uiManager.ShowScreenSM(8);
-//		uiManager.ShowScreenSM(1);	
-	
+		uiManager.ShowScreenSM("activeStoryPanel",false);
+		uiManager.ShowScreenSM ("activeAwnserPanel", false);
 	}
 	public void CheckAwnser(Text text){ //Usar esto para verificar si el jugador acerto. !rellenar los valores en el editor de unity¡
-		uiManager.ShowScreenSM("activeStoryPanel",false);
+		GameManager.Instance.audioPlayer.PlayOneShot (GameManager.Instance.clip [5]);
+		Debug.Log("comprobar respuesta desde texto");
 		CheckRound();
 		totalRounds++;
 		if(text.text.Equals(currentCorrectAwnser)){
 			wins++;
 			Debug.Log("Correcto"+ text.text+"\t"+"wins"+wins+"   loses"+losses );
 			RoundWin ();
+			uiManager.ShowScreenSM ("activeWinPanel", true);
 		}else{
 			Debug.Log("Incorrecto"+ text.text);
 			losses++;
 			Debug.Log("Incorrecto"+ text);
 			RoundLose ();
+			uiManager.ShowScreenSM ("activeLosePanel", true);
 		}
 		uiManager.ShowScreenSM("activeStoryPanel",false);
-//		uiManager.ShowScreenSM(8);
-//		uiManager.ShowScreenSM(1);	
+		uiManager.ShowScreenSM ("activeAwnserPanel", false);	
 	}
 	public void CheckQuestion(string text){
+		GameManager.Instance.audioPlayer.PlayOneShot (GameManager.Instance.clip [5]);
+		Debug.Log ("comprobar pregunta");
 		// track the correct awnser for the player question choice.
-
 		int x = 0;
 		for (int i=0; i < qaListFull.Count; i++){
 			if (qaListFull [i].questions [0] == text||qaListFull [i].questions [1] == text) {
@@ -171,37 +182,31 @@ public class GameplayManager : MonoBehaviour {
 			}
 		}
 		//randomize a reponse for the question
-		uiManager.currentQuestion.text = qaListFull [x].awnsers;
+		uiManager.currentQuestion.text =uiManager.currentQuestion.text+"\n"+" - Rigby : " +qaListFull [x].awnsers; //PRINT THE AWNSER
 		if (qaListFull [x].questions [0] == text||qaListFull [x].questions [1] == text) {
 			//MACHINE SCORESSSS
 			Debug.Log("MAchine Scoreeees"+"\t"+"wins"+wins+"   loses"+losses );
 			losses++;
 			RoundLose ();
+			uiManager.ShowScreenSM ("activeLosePanel",true);
 		} else {
 			//WHAT A FAIL FROM THE MACHINE OMG!
-//			uiManager.ShowScreenSM(6);
 			wins++;
 			Debug.Log("MAchine faiiils"+"\t"+x+"\t"+text+"\t"+"wins"+wins+"   loses"+losses );
-			RoundWin ();
 
+			if (wins != 2) {
+				uiManager.ShowScreenSM ("activeWinPanel", true);
+			}
+			RoundWin ();
 		}
 
+		uiManager.ShowScreenSM ("activeAwnserPanel", false);
 		CheckRound();
 	}
 	public void ContiuneButton(GameObject activePanel){ //!rellenar los valores en el editor de unity¡
-		if (activePanel.name == "WinFighterPanel") {
-//			uiManager.ShowScreenSM(6);
-			CheckRound ();
-		}
-		if (activePanel.name == "WinPanel") {
-//			uiManager.ShowScreenSM (5, activePanel);
-		}else{
-			if (activePanel.name == "LosePanel") {
-//				uiManager.ShowScreenSM (4, activePanel);
-//				uiManager.ShowScreenSM (7);
-			}
-		}
-
+		uiManager.ShowScreenSM("active"+activePanel.name,false);
+		uiManager.ShowScreenSM("activeStoryPanel",true);
+		uiManager.ShowScreenSM ("activeAwnserPanel", true);
 	}
 	#endregion
 }
