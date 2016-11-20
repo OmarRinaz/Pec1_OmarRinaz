@@ -5,7 +5,7 @@ using System.Collections;
 using System.Xml;
 
 public class StoryFiller {
-	
+	//old and antifaishon way not used anymore
 	public static List<GameplayManager.QuestionAwnser> FillList(){		//usar esto para rellenar la lista con las preguntas y su respuesta correcta.
 		List<GameplayManager.QuestionAwnser> qaList = new List<GameplayManager.QuestionAwnser> ();
 		qaList.Add(CreateQA(new string[]{"¡No hay palabras para describir lo asqueroso que eres!","Ya no hay técnicas que te puedan salvar."},"Sí que las hay, sólo que nunca las has aprendido."));
@@ -14,7 +14,7 @@ public class StoryFiller {
 		qaList.Add(CreateQA(new string[]{"¡La gente cae a mis pies al verme llegar!","Mis enemigos más sabios corren al verme llegar."},"¿Incluso antes de que huelan tu aliento?"));
 		return qaList;
 	}
-
+	//new faishon way search for xml with all the text and charge it to the data struct QuestionAwnser
 	public static List<GameplayManager.QuestionAwnser> FillListFromXml(){
 		string filePath = Application.dataPath+"/Resources/QaTextList.xml";
 		TextAsset textAsset = (TextAsset)Resources.Load ("QaTextList");
@@ -39,7 +39,7 @@ public class StoryFiller {
 		}
 		return qaList;
 	}
-
+	//use this to initialize the list
 	private static GameplayManager.QuestionAwnser CreateQA(string[] questions, string awnser){ //constructor de obj tipo QuestionAwnser.
 		GameplayManager.QuestionAwnser newQA = new GameplayManager.QuestionAwnser ();
 		newQA.questions = questions;

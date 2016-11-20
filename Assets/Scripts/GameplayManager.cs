@@ -64,9 +64,11 @@ public class GameplayManager : MonoBehaviour {
 		FillCurrentAwnser ();
 		GameManager.Instance.audioPlayer.clip = GameManager.Instance.clip[1];
 		GameManager.Instance.audioPlayer.Play ();
+		uiManager.winScoreLabel.text = "Wins : " + wins;	
+		uiManager.loseScoreLabel.text = "Lose : " + losses;
 	}
 	void Update(){
-		if(Input.GetKey("escape"))
+		if(Input.GetKey(KeyCode.Escape))
 			GamePause();
 	}
 	#endregion
@@ -89,8 +91,9 @@ public class GameplayManager : MonoBehaviour {
 	}
 
 	private void CheckRound(){
+
 		if (wins==2) {
-			Debug.Log ("YOU WIN 2 rounds in a row");
+			//Debug.Log ("YOU WIN 2 rounds in a row");
 			//FillCurrentAwnser (); 
 			uiManager.ShowScreenSM ("activeAwnserPanel", false);
 			uiManager.ShowScreenSM ("activeWinPanel", false);
@@ -99,11 +102,11 @@ public class GameplayManager : MonoBehaviour {
 			GameManager.Instance.audioPlayer.PlayOneShot (GameManager.Instance.clip [3]);
 		}
 		if (losses == 2) {
-			
-			Debug.Log ("BETTER IMPROVE BCUSE YOU LOST");
-
+			//Debug.Log ("BETTER IMPROVE BCUSE YOU LOST");
 			GameManager.Instance.GameOver ();
 		}
+		uiManager.winScoreLabel.text = "Wins : " + wins;
+		uiManager.loseScoreLabel.text = "Lose : " + losses;
 	}
 
 	private void RoundWin(){
@@ -138,11 +141,13 @@ public class GameplayManager : MonoBehaviour {
 		CheckRound();
 		if(text.Equals(currentCorrectAwnser)){
 			wins++;
+			uiManager.winScoreLabel.text = "Wins : " + wins;
 			Debug.Log("Correcto"+ text+"\t"+"wins"+wins+"   loses"+losses );
 			RoundWin ();
 			uiManager.ShowScreenSM ("activeWinPanel", true);
 		}else{
 			losses++;
+			uiManager.loseScoreLabel.text = "Lose : " + losses;
 			Debug.Log("Incorrecto"+ text);
 			RoundLose ();
 			uiManager.ShowScreenSM ("activeLosePanel", true);
@@ -157,12 +162,14 @@ public class GameplayManager : MonoBehaviour {
 		totalRounds++;
 		if(text.text.Equals(currentCorrectAwnser)){
 			wins++;
+			uiManager.winScoreLabel.text = "Wins : " + wins;
 			Debug.Log("Correcto"+ text.text+"\t"+"wins"+wins+"   loses"+losses );
 			RoundWin ();
 			uiManager.ShowScreenSM ("activeWinPanel", true);
 		}else{
 			Debug.Log("Incorrecto"+ text.text);
 			losses++;
+			uiManager.loseScoreLabel.text = "Lose : " + losses;
 			Debug.Log("Incorrecto"+ text);
 			RoundLose ();
 			uiManager.ShowScreenSM ("activeLosePanel", true);
@@ -172,39 +179,40 @@ public class GameplayManager : MonoBehaviour {
 	}
 	public void CheckQuestion(string text){
 		GameManager.Instance.audioPlayer.PlayOneShot (GameManager.Instance.clip [5]);
-		Debug.Log ("comprobar pregunta");
+		//Debug.Log ("comprobar pregunta");
 		// track the correct awnser for the player question choice.
 		int x = 0;
 		for (int i=0; i < qaListFull.Count; i++){
-			if (qaListFull [i].questions [0] == text||qaListFull [i].questions [1] == text) {
+			if (qaListFull [i].questions [0] == text || qaListFull [i].questions [1] == text) {
 				current = qaListFull [i];
-				Debug.Log ("found it");
-				x = Random.Range(0,3);
+				//Debug.Log ("found it"); //to know what index is the awnser.
+				x = Random.Range (0, 3);
 				break;
 			} else {
-				if (i == 9)
-					Debug.Log ("wrong");
+				if (i == 9) {
+					//Debug.Log ("wrong");
+				}
 			}
 		}
 		//randomize a reponse for the question
 		uiManager.currentQuestion.text =uiManager.currentQuestion.text+"\n"+" - Rigby : " +qaListFull [x].awnsers; //PRINT THE AWNSER
 		if (qaListFull [x].questions [0] == text||qaListFull [x].questions [1] == text) {
 			//MACHINE SCORESSSS
-			Debug.Log("MAchine Scoreeees"+"\t"+"wins"+wins+"   loses"+losses );
+			//Debug.Log("MAchine Scoreeees"+"\t"+"wins"+wins+"   loses"+losses );
 			losses++;
+			uiManager.loseScoreLabel.text = "Lose : " + losses;
 			RoundLose ();
 			uiManager.ShowScreenSM ("activeLosePanel",true);
 		} else {
 			//WHAT A FAIL FROM THE MACHINE OMG!
 			wins++;
-			Debug.Log("MAchine faiiils"+"\t"+x+"\t"+text+"\t"+"wins"+wins+"   loses"+losses );
-
+			uiManager.winScoreLabel.text = "Wins : " + wins;
+			//Debug.Log("MAchine faiiils"+"\t"+x+"\t"+text+"\t"+"wins"+wins+"   loses"+losses );
 			if (wins != 2) {
 				uiManager.ShowScreenSM ("activeWinPanel", true);
 			}
 			RoundWin ();
 		}
-
 		uiManager.ShowScreenSM ("activeAwnserPanel", false);
 		CheckRound();
 	}
@@ -214,8 +222,7 @@ public class GameplayManager : MonoBehaviour {
 		uiManager.ShowScreenSM ("activeAwnserPanel", true);
 	}
 	public void GamePause(){
-				uiManager.ShowScreenSM("activePausePanel",true);
-
+		uiManager.ShowScreenSM("activePausePanel",true);
 		Time.timeScale = 0f;
 	}
 	public void ExitPause(){

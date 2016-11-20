@@ -7,12 +7,12 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
-	public AudioSource audioPlayer;
-	public AudioClip[] clip ;
-	public Button firstBut;
-	public Button secondBut;
+	public AudioSource audioPlayer; // to play things use this
+	public AudioClip[] clip ;		//store clips on editor with that array
+	public Button firstBut;			//start game butn
+	public Button secondBut;		//Exit game butn
 	#region private vars
-	private static GameManager instance = null;
+	private static GameManager instance = null; 
 	#endregion
 
 	#region public vars
@@ -32,12 +32,15 @@ public class GameManager : MonoBehaviour {
 		else if (instance != this)
 			Destroy (this.gameObject);
 		DontDestroyOnLoad (this.gameObject);
+		//get some components
 		audioPlayer = instance.GetComponent<AudioSource> ();
+		//set the values for audio source
 		//clip = new AudioClip[3]; create the array in the editor
 		audioPlayer.volume = 0.25f;
 		audioPlayer.loop = true;
 		audioPlayer.clip = clip[0];
 		audioPlayer.Play ();
+		//find the butons and add the functions to them
 		firstBut = GameObject.Find ("NewGameButton").GetComponent<Button> ();
 		secondBut = GameObject.Find ("SalirButton").GetComponent<Button> ();
 		AddListener ();
@@ -46,12 +49,12 @@ public class GameManager : MonoBehaviour {
 		Debug.Log (clip);
 	}
 	void Update(){
-		if (!firstBut && SceneManager.GetActiveScene ().name == "MenuScene") {
+		if (!firstBut && SceneManager.GetActiveScene ().name == "MenuScene") { //bcause i was geting lots of errors on charging the menu i decided to do this checking, if so i charge some vars that are null after switching scenes
 			Init ();
 		}
 	}
 		
-	void Init(){
+	void Init(){ //find some components and add stuff to them
 //		secondBut = GameObject.Find ("SalirButton").GetComponent<Button> ();
 		firstBut = GameObject.Find ("NewGameButton").GetComponent<Button> ();
 		secondBut = GameObject.Find ("SalirButton").GetComponent<Button> ();
@@ -81,18 +84,20 @@ public class GameManager : MonoBehaviour {
 		audioPlayer.clip = clip[1];
 		audioPlayer.Play ();
 	}
+	//use this to go back to the menu
 	public void Menu(){
 		SceneManager.LoadScene ("MenuScene");
 		//Init ();
 		Debug.Log (SceneManager.GetActiveScene ().name);
 	}
+	//use this to point the end of the game
 	public void GameOver(){
 		SceneManager.LoadScene ("EndGameScene");
 		audioPlayer.clip = clip[2];
 		audioPlayer.Play ();
 		GameManager.Instance.audioPlayer.PlayOneShot (GameManager.Instance.clip [4]);
 	}
-
+	//ad the functions to some buttons
 	void AddListener() 
 	{
 		

@@ -7,17 +7,20 @@ using System.Collections;
 public class UiManager: MonoBehaviour{
 
 	private static UiManager instance = null;
-	private GameObject winPanel;
-	private GameObject winFighterPanel;
-	private GameObject losePanel;
-//	private GameObject gameplayPanel;
-	private GameObject storyPanel;
-	private GameObject awnserPanel;
-	private GameObject pausePanel;
-	private GameObject[] buttonAwnser;
+	private GameObject winPanel;		//win round panel and group
+	private GameObject winFighterPanel; //Win Fight panel and group
+	private GameObject losePanel;		//Lose Round panel and group
+//	private GameObject gameplayPanel; //not used anymore
+	private GameObject storyPanel;		//machine output panel and group
+	private GameObject awnserPanel;		//player panel for awnsering/asking
+	private GameObject pausePanel;		//menu pause
+	private GameObject[] buttonAwnser;	//store the buttons from the player panel to asign them some listeners
 	private string awnserPath = "Canvas/GameplayPanel/AwnserGroup/AwnserButton";
 	private GameplayManager gameplayManager;
+
 	public Text currentQuestion;
+	public Text winScoreLabel;			//store the current wins we got
+	public Text loseScoreLabel;		//store the current losses we got
 
 	public static UiManager Instance {
 		get {
@@ -35,6 +38,8 @@ public class UiManager: MonoBehaviour{
 		winPanel = GameObject.Find ("Canvas/WinPanel");
 		winFighterPanel = GameObject.Find ("Canvas/WinFighterPanel");
 		losePanel = GameObject.Find ("Canvas/LosePanel");
+		winScoreLabel = GameObject.Find ("Canvas/WinScorePanel/WinScore").GetComponent<Text> ();
+		loseScoreLabel = GameObject.Find ("Canvas/LoseScorePanel/LoseScore").GetComponent<Text> ();
 //		gameplayPanel = GameObject.Find ("Canvas/GameplayPanel");
 		currentQuestion = GameObject.Find ("Canvas/GameplayPanel/StoryGroup/MaskTextHistory/TextHistory").GetComponent<Text>();
 		buttonAwnser = new GameObject[4];
@@ -166,34 +171,3 @@ public class UiManager: MonoBehaviour{
 		}
 	}
 }
-//break;
-//case 2:
-//losePanel.SetActive (true);//if you lose a round no mater what trigger that
-//break;
-//case 3:
-//winFighterPanel.SetActive (true);//if you finaly win the fighter fire that one
-//break;
-//case 4:
-//activePanel.SetActive (false);//triger that when 
-//gameplayPanel.SetActive (true);
-//break;
-//case 5:
-//activePanel.SetActive (false);
-//gameplayPanel.SetActive (true);
-//gameplayPanel.transform.FindChild ("StoryGroup").gameObject.SetActive (false);
-//break;
-//case 6:
-////activePanel.SetActive (false);
-//if(winPanel.activeInHierarchy)winPanel.SetActive (true);//if you finaly win the fighter fire that one)
-//gameplayPanel.SetActive (true);
-//gameplayPanel.transform.FindChild ("AwnserGroup").gameObject.SetActive (false);
-//gameplayPanel.transform.FindChild ("StoryGroup").gameObject.SetActive (true);
-//break;
-//case 7:
-//gameplayPanel.transform.FindChild ("StoryGroup").gameObject.SetActive (true);
-//gameplayPanel.transform.FindChild ("AwnserGroup").gameObject.SetActive (true);
-//break;
-//case 8:
-//gameplayPanel.transform.FindChild ("StoryGroup").gameObject.SetActive (false);
-//gameplayPanel.transform.FindChild ("AwnserGroup").gameObject.SetActive (false);
-//break;
